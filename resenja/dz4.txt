@@ -1,0 +1,31 @@
+1. P0 pristupio memoriji 3x. P1 pristupio memoriji 1x. P0 hit rate = 1 / 3. P1 hit rate = 0/1.
+2. Koriscenje write-no-allocate mehanizma se moze zakljuciti iz operacije 3. prethodnog zadatka. Nulti blok u kesu procesora P1 bi izgledao = “V a0 2”
+3. Razlika je mala, tj, princip rada je isti kao i kod multiprocesorskih sistema, osim sto kod jednoprocesorskih sistema nema potrebe za invalidacijom, zato sto niko drugi ne moze da izmeni kes osim tog procesora.
+4. Nijedan. P0 ima validan podatak. Memorija je azurna.
+5. Nijedan procesor nema validnan podatak nakon cele sekvence. Po protokolu, svaki write “prolazi” do memorije, pa tako nepotrebno koristi resurse. Moguce poboljsanje bi da se prvo odrade svi write-ovi (u kes prostoru) i na kraju krajnje stanje upise u memoriju. 
+6. Podatak a0 u P0 biva zamenjen podatkom a2. Nisu potrebne posebne akcije protokola, zato sto je memorija uvek azurna u ovom slucaju.
+7. P0 pristupa memoriji 2x, P1 3x. P0 prvi put u koraku 1 kada cita a0 iz memorije i onda ponovo u koraku 5 kada azurira taj podatak nakon sto ga je P1 zatrazio. P1 pristupa memoriji 2x u koraku 7, kada prvo azurira potatak a0 pa zatim uzima a2 za upis. P1 pristupa memoriji treci put u koraku 8 kada azurira a2 nakon sto ga P2 zatrazi.
+8. U koraku 1, osim drugacijih stanja, tj prelaska u stanje Shared pri citanju, nema razlike izmedju ova 2 protokola. U koraku 8 se jasnije vidi razlika, kada P1 azurira podatak a2 lokalno (nakon sto je prvo procitao), bez upisa u memoriju. U 3 i 4 se podaci azuriraju u lokalnom kesu, bez potrebe za odlazak na magistralu i komunikaciju sa memorijom ili ostalim procesorima.
+9. Azurira se a0 u memoriji i nakon toga dovlaci a2 u P1.
+10. Pri upisu u a0 P0 odlazi na magistralu da bi invalidirao taj podatak u memoriji. Korak vise, posto u sledecim write koracima on samo odlazi do kesa.
+11. MESI u ovom slucaju nema problem iz prethodnog pitanja, tj vec u drugom koraku P0 komunicira samo sa svojim kesom.
+12. U koracima 2 i 3 se uocava prednost direktne komunikacije izmedju keseva, bez potrebe za azuriranjem memorije. Na osnovu shared signala.
+13. A0 se nalazi u stanju I u procesoru P0 i stanju S u procesorima P1 i P2. Pri zameni u koraku 6 se desava jednostavna akcija dovlacenja novog podatka iz memorije i posatvljanja njegovog statusa na E.
+14. Protokol MESI ne podrazumeva obavestavanje ostalih procesora o ovakvim situacijama, sto je mana protokola i onemogucava nam da samo na osnovu stanja podatka u kesu odredimo da li je jedinstven ili ne. Mogao bi da se iskoristi shared signal, i pri svakom upisu proverava da li je neki podatak jedinstven.
+15. A0 se dobija iz procesora P2. Memorija se azurira zato sto je A0 bio u M stanju, ali u istom koraku podatak u memoriji zastareva.
+16. Iz P0. Iz memorije. Da se ne bi postavljalo pitanje iz kog kesa je najbolje da dodje podatak i izbegla latencija pritom.
+17. P1 Shared, P2 Owned. Memorija nije azurna. Podatak A0 bi dobio iz P2 zato sto je Owned.
+18. Prvo bi se azurirao A0 u memoriji a zatim dovukao A2 iz P1.
+19. P0 2 pristupa. P1 2, P2 1. Hit rate: P0 0.5, P1 0.33, P2 0
+20. U stanje Sc. Podatak se u P1 i P2 dostavlja iz memorije i svi prelaze u stanje Sc.
+21. Sm za P0, Sc za P1 i P2. Vrednosti su svuda azurirane, tj 1. Memorija se ne azurira. Ovaj protokol umesto invalidacije radi direktno azuriranje u ostalim kesevima.
+22. Bice u stanju E, a posle koraka 6 u stanju M. A2 je jedinstven u tom kesu i zato nije presao u Sm. Stanje u koje ce preci se odredjuje na osnovu Shared signala. Samo je ucitan novi podatak, nije bilo posebnih komplikovanijih akcija.
+23. A0 se azurira u memoriji, A2 se ucitava iz P1. U memoriji je A0 azurno, A2 nije. A2 je Sc za P0 i Sm za P1.
+24. Azurira se podatak u P1. Stanje A2 u P0 je Sm, u P1 Sc, tako da su kopije azurne.
+25. Vrsi se azuriranje kesa u P1.
+26. A0 je u SD stanju, slicno E stanju u Dragon protokolu. Oznacava da podatak nije ni Shared ni Dirty, ali je azuran. 
+27. S i u P0 i u P1. 
+28. S u sva 3.
+29. Memorija je azurna. Svuda S.
+30. Nisu potrebne posebne akcije, cita se direktno iz memorije.
+31.
